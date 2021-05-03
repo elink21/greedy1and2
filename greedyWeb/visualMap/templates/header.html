@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.js"
+      integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+      crossorigin="anonymous"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <link rel="stylesheet" href="{% static '/css/styles.css'%}" />
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+
+    <title>Greedy heuristic</title>
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+
+    <div id="controlsDiv">
+      <h4>Greedy Heuristic A 🌎</h4>
+      <br />
+
+      <div class="input-field col s12 select">
+        <select id="select">
+          <option value="" disabled selected>Choose your option</option>
+          {% for place in places %}
+          <option value="{{ forloop.counter0 }}">{{place}}</option>
+          {% endfor %}
+        </select>
+        <label>Select origin</label>
+      </div>
+
+      <a
+        onclick="sendData();"
+        class="btn-floating btn-large waves-effect waves-light green"
+        ><i class="material-icons">send</i></a
+      >
+
+      <br />
+      <h4>Route tracing 🚗</h4>
+
+      <div id="tableWrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Distance</th>
+            </tr>
+          </thead>
+
+          <tbody id="tBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="{% static '/js/data.js'%}"></script>
+
+    <script src="{% static '/js/mapCode.js'%}"></script>
+
+    <script>
+      $(document).ready(function () {
+        $("select").formSelect();
+      });
+    </script>
+  </body>
+</html>

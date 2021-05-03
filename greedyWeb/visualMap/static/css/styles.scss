@@ -1,0 +1,19 @@
+body {
+  display: grid;
+
+  height: 100vh;
+  grid-template-columns: 1fr 1fr;
+}
+
+#controlsDiv {
+  text-align: center;
+  justify-self: center;
+
+  #tableWrapper{
+    max-height: 300px;
+    overflow-y: scroll;
+  }
+
+  
+  
+}
