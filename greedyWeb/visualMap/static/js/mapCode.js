@@ -26,6 +26,18 @@ function sendData() {
     });
 }
 
+function greedyB() {
+    $.ajax({
+        url: 'greedyB',
+        data: {},
+        success: function (data) {
+            updateTable(data['route'], data['distance']);
+            resetMap();
+            drawLines(data['route'], map)
+        }
+    });
+}
+
 function drawLines(route, map) {
     for (let r of route) {
         let from = names[r['from']];

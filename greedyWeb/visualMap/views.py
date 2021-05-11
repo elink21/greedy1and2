@@ -1,10 +1,9 @@
 from django.http import request
 from django.http.response import JsonResponse
 from django.shortcuts import render
-
+import tsp
 
 # Algorithm functions
-import os
 from typing import List
 
 
@@ -32,7 +31,75 @@ def searchForBestOption(actualIndex: int, row: List, alreadyVisited: List, dista
     return nextToVisit
 
 
-def greedyAFn(initialNode):
+def routeAdded(a, b, route):
+    for r in route:
+        if r['from'] == a and r['to'] == b or r['from'] == b and r['to'] == a:
+            return True
+
+
+def notALoop(route, newF, newT):
+    newRoutes = list(route)
+    newRoutes.append({'from': newF, 'to': newT})
+
+    for i in range(len(newRoutes)):
+        startFrom = newRoutes[i]['from']
+        startTo = newRoutes[i]['to']
+        for j in range(len(newRoutes)):
+            if i != j:
+                if startFrom == newRoutes[j]['to']:
+                    return False
+
+    print("-"*7)
+
+    for x in route:
+        print(x)
+
+    return True
+
+
+def validCandidates(a, b):
+    if a+1 > 2:
+        return False
+    if b+1 > 2:
+        return False
+    if a+b >= 2:
+        return False
+    return True
+
+
+def greedyBFn():
+    route = []
+
+    distanceMatrix, sortedConn, headers = getDatafromFile()
+    grades = []
+    route = []
+
+    for i in range(len(headers)):
+        grades.append(0)
+
+    i = 0
+    alreadyVisited = []
+
+    while i < len(sortedConn):
+        actualCandidate = sortedConn[i]
+        i += 1
+
+        # checking if from,two are valid
+        f = actualCandidate['from']
+        t = actualCandidate['to']
+        if validCandidates(grades[f], grades[t]) and not routeAdded(f, t, route) and notALoop(route, f, t,):
+            grades[f] += 1
+            grades[t] += 1
+
+            route.append({'from': f, 'to': t,
+                          'distance': distanceMatrix[f][t]})
+    for r in route:
+        print(
+            f'({r["from"]}, {grades[r["from"]]})  \t ({r["to"]}, {grades[r["to"]]})\t-{r["distance"]}')
+    return [route, sum([r['distance'] for r in route])]
+
+
+def getDatafromFile():
     fileLines = List[str]
 
     with open(f'visualMap/distances.csv') as fileOfDistances:
@@ -62,11 +129,20 @@ def greedyAFn(initialNode):
     for i in range(len(distanceMatrix)):
         for j in range(len(distanceMatrix[0])):
             if i != j:
-                connections.append({'from': headers[j].replace('\n', ''),
-                                    'to': headers[i].replace('\n', ''),
+                connections.append({'from': i,
+                                    'to': j,
                                     'distance': distanceMatrix[i][j]})
 
     sortedConnections = sorted(connections, key=lambda k: k['distance'])
+    cleanedSorted = [sortedConnections[i]
+                     for i in range(len(sortedConnections)) if i % 2 == 0]
+
+    return [distanceMatrix, cleanedSorted, headers]
+
+
+def greedyAFn(initialNode):
+
+    distanceMatrix, _, headers = getDatafromFile()
 
     # Requesting initial node, for testing its gonna be 'CHETUMAL'
 
@@ -110,7 +186,7 @@ def greedyAFn(initialNode):
     print(f"total distance: {sum([r['distance'] for r in route])}")
 
     return [route, sum([r['distance'] for r in route])]
-    pass
+
 # Routing functions
 
 
@@ -123,4 +199,10 @@ def home(req):
 def greedyA(request):
     initialNode = request.GET['initialNode']
     route, distance = greedyAFn(initialNode)
+    return JsonResponse({"route": route, 'distance': distance})
+
+
+def greedyB(request):
+    print("Activado")
+    route, distance = greedyBFn()
     return JsonResponse({"route": route, 'distance': distance})
